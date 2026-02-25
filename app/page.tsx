@@ -77,8 +77,8 @@ const timelineItems: TimelineItem[] = [
 export default function Home() {
   return (
     <>
-      <main className="mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center pt-8 font-mono">
-        <section className="w-full max-w-xl">
+      <main className="mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center pt-4 md:pt-8 font-mono">
+        <section className="w-full max-w-xl px-4 md:px-0">
           <div className="flex w-full flex-row justify-between items-center mb-6">
             <div className="flex flex-row gap-1">
               <h1 className="text-2xl font-semibold tracking-tight">
