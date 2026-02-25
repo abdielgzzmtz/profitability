@@ -1,13 +1,12 @@
 import {
-  Node,
-  NodeContent,
-  NodeDescription,
-  NodeHeader,
-  NodeTitle,
-} from "@/components/ai-elements/node";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { ClockIcon, History } from "lucide-react";
+import { ClockIcon, CloudUpload, DatabaseBackup, History, RefreshCcw, RefreshCwOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -25,6 +24,7 @@ type TimelineItem = {
   date: string;
   title: string | React.ReactNode;
   description: string | React.ReactNode;
+  icon: React.ReactNode;
 };
 
 function ContextDefinition({ children, description }: { children: React.ReactNode; description: string }) {
@@ -45,31 +45,33 @@ const timelineItems: TimelineItem[] = [
     date: "18:00 P.M.",
     title: <p>Inicio de la <ContextDefinition description="Base de datos espejo del servidor central, actualizada con información consolidada hasta las 00:00 horas del día en curso.">Réplica Offline</ContextDefinition> - Bnext</p>,
     description: <p className="text-sm text-muted-foreground">La base de datos réplica de central se inicia y comienza a sincronizar los datos del <ContextDefinition description="Base de datos central en la que se almacena toda la información de la operación de Heineken.">servidor central</ContextDefinition>.</p>,
+    icon: <RefreshCcw className="size-4" />,
   },
   {
     date: "00:00 A.M.",
     title: <p>Fin de la <ContextDefinition description="Base de datos espejo del servidor central, actualizada con información consolidada hasta las 00:00 horas del día en curso.">Réplica Offline</ContextDefinition> - Bnext</p>,
     description: <p className="text-sm text-muted-foreground">La base de datos réplica de central ha completado la sincronización con el <ContextDefinition description="Base de datos central en la que se almacena toda la información de la operación de Heineken.">servidor central</ContextDefinition>. </p>,
+    icon: <RefreshCwOff className="size-4" />,
   },
   {
     date: "01:30 A.M.",
     title: <p>Extracción de la información - Bnext</p>,
-    description: <div><p className="text-sm text-muted-foreground">Se inicia el proceso de extracción de información desde la base de datos Réplica Offline hacia la base de datos Profitability.
+    description: <div><p className="text-sm text-muted-foreground">Se inicia el proceso de extracción de información desde la base de datos <ContextDefinition description="Base de datos espejo del servidor central, actualizada con información consolidada hasta las 00:00 horas del día en curso.">réplica offline</ContextDefinition> hacia la base de datos Profitability.
 
-      Esta base de datos contiene una versión resumida de las tablas operativas del servidor central, excluyendo datos de auditoría internos de Bnext y cualquier información que no sea relevante para Heineken.
+      Esta base de datos es una representación del <ContextDefinition description="Reporte detallado de ventas por tienda.">Reporte 7</ContextDefinition> de ventas.
 
-      La estructura de las tablas fue diseñada con base en el <ContextDefinition description="Reporte detallado de ventas por tienda.">Reporte 7</ContextDefinition>. Se extraen los catálogos del sistema y, principalmente, la información operativa. Las tablas clave consideradas en este proceso son:</p>  <ul className="list-decimal ml-7 text-sm pt-2"><li>orders - <span className="text-muted-foreground">Tickets de venta</span></li><li>order_lines - <span className="text-muted-foreground">Desglose de los tickets de venta</span></li><li>order_line_discounts - <span className="text-muted-foreground">Descuentos aplicados</span></li><li>order_line_taxes - <span className="text-muted-foreground">Impuestos aplicados</span></li><li>order_line_cancellations - <span className="text-muted-foreground">Tickets cancelados</span></li><li>journals - <span className="text-muted-foreground">Pólizas</span></li><li>document_journals - <span className="text-muted-foreground">Relación Póliza - Ticket de venta</span></li></ul></div>,
-  },
+      Se extraen 16 catálogos del sistema y, principalmente, la información de ventas. Algunas de las tablas creadas para este proceso son:</p>  <ul className="list-decimal ml-7 text-sm pt-2"><li>orders - <span className="text-muted-foreground">Tickets de venta</span></li><li>order_lines - <span className="text-muted-foreground">Desglose de los tickets de venta</span></li><li>order_line_discounts - <span className="text-muted-foreground">Descuentos aplicados</span></li><li>order_line_taxes - <span className="text-muted-foreground">Impuestos aplicados</span></li><li>order_line_cancellations - <span className="text-muted-foreground">Tickets cancelados</span></li><li>journals - <span className="text-muted-foreground">Pólizas</span></li><li>document_journals - <span className="text-muted-foreground">Relación Póliza - Ticket de venta</span></li></ul></div>,
+    icon: <DatabaseBackup className="size-4" />},
   {
     date: "02:15 A.M.",
     title: <p>Fin de extracción de la información - Bnext</p>,
     description: <p className="text-sm text-muted-foreground">Se concluye el proceso de extracción de información desde la base de datos Réplica Offline hacia la base de datos Profitability.</p>,
-  },
+    icon: <RefreshCwOff className="size-4" />},
   {
     date: "03:00 A.M.",
     title: <p>Extracción de la información - Heineken</p>,
     description: <p className="text-sm text-muted-foreground">Se inicia el proceso de extracción de información desde la base de datos Profitability hacia SAP a través de jobs de Azure.</p>,
-  },
+    icon: <CloudUpload className="size-4" />},
 ];
 
 export default function Home() {
@@ -112,31 +114,36 @@ export default function Home() {
               <Image src="/heineken.png" alt="Heineken Logo" priority width={512} height={182} className="w-30" />
             </div>
           </div>
-          <div className="flex flex-col items-center">
+          <Accordion type="multiple" className="w-full">
             {timelineItems.map((item, index) => (
               <div
                 key={item.date}
                 className="flex w-full flex-col items-center"
               >
-                <Node handles={{ target: false, source: false }} className="w-full">
-                  <NodeHeader className="flex flex-row justify-between">
-                    <NodeTitle className="uppercase">{item.title}</NodeTitle>
-                    <NodeDescription className="flex flex-row gap-1 items-center text-xs text-muted-foreground">
-                      <ClockIcon className="size-3" />
-                      {item.date}
-                    </NodeDescription>
-                  </NodeHeader>
-                  <NodeContent>
+                <AccordionItem value={`item-${index}`} className="w-full rounded-xl border bg-accent px-4">
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex w-full flex-row items-center justify-between gap-2 pr-2">
+                      <div className="text-left uppercase flex items-center gap-4">
+                        {item.icon}
+                        {item.title}
+                      </div>
+                      <span className="flex shrink-0 flex-row items-center gap-1 text-xs text-muted-foreground">
+                        <ClockIcon className="size-3" />
+                        {item.date}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
                     {item.description}
-                  </NodeContent>
-                </Node>
+                  </AccordionContent>
+                </AccordionItem>
 
                 {index < timelineItems.length - 1 && (
                   <div className="h-8 w-px bg-border" aria-hidden="true" />
                 )}
               </div>
             ))}
-          </div>
+          </Accordion>
         </section>
       </main>
 
